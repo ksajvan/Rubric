@@ -12,9 +12,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +32,9 @@ import java.net.URL;
  * A placeholder fragment containing a simple view.
  */
 public class MovieFragment extends Fragment {
+//    private ArrayAdapter<String> mImageAdapter;
+//    private String[] mImageAdapter;
+    private ImageAdapter mImageAdapter;
 
     public MovieFragment() {
     }
@@ -57,24 +65,28 @@ public class MovieFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Load ragment layout
+
+        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        moviesTask.execute("popular");
+
+        // Load fragment layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         // Load component that will hold data (ListView, GridView,..)
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
 
-//        ImageView imageView = (ImageView) rootView.findViewById(R.id.poster_item_imageview);
-        // Set Content to GridView in this case
-        gridView.setAdapter(new ImageAdapter(getActivity()));
-//        gridView.setAdapter(new ImageAdapter(getActivity(), imageView));
+        mImageAdapter = new ImageAdapter(getActivity());
+        gridView.setAdapter(mImageAdapter);
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), String.valueOf(position),
-                        Toast.LENGTH_LONG).show();
-            }
-        });
+//        gridView.setAdapter(new ImageAdapter(getActivity()));
+
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+////
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(getActivity(), String.valueOf(position),
+//                        Toast.LENGTH_LONG).show();
+//            }
+//        });
 
         return rootView;
     }
@@ -83,8 +95,30 @@ public class MovieFragment extends Fragment {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-        private String[] getMovieDataFromJson(String moviesJsonStr) {
-            return null;
+        private String[] getMovieDataFromJson(String moviesJsonStr) throws JSONException {
+            // names from json that should be extracted
+            final String TMDB_RESULTS = "results";
+            final String TMDB_POSTER_PATH = "poster_path";
+            final String POSTER_PATH_BASE_URL =   "http://image.tmdb.org/t/p/w185/";
+            String finalPath;
+
+            JSONObject moviesJson = new JSONObject(moviesJsonStr);
+            JSONArray moviesArray = moviesJson.getJSONArray(TMDB_RESULTS);
+
+            String[] resultPaths = new String[moviesArray.length()];
+            for(int i = 0; i < moviesArray.length(); i++) {
+                String poster_path;
+                JSONObject jsonObj = moviesArray.getJSONObject(i);
+                poster_path = jsonObj.getString(TMDB_POSTER_PATH);
+                finalPath = POSTER_PATH_BASE_URL.concat(poster_path);
+                resultPaths[i] = finalPath;
+            }
+
+//            for (String s : resultPaths) {
+//                Log.v(LOG_TAG, "Movie Poster Path: " + s);
+//            }
+
+            return resultPaths;
         }
 
         @Override
@@ -148,7 +182,27 @@ public class MovieFragment extends Fragment {
                     }
                 }
             }
+            try {
+                return getMovieDataFromJson(moviesJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+//            mImageAdapter = result;
+            if (result != null) {
+//                mImageAdapter.clear();
+                ImageAdapter.moviePosterImages = result;
+//                for(String dayForecastStr : result) {
+//                    mImageAdapter.add(dayForecastStr);
+//                }
+                // New data is back from the server.  Hooray!
+            }
+            mImageAdapter.notifyDataSetChanged();
         }
     }
 }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -18,9 +19,17 @@ import com.squareup.picasso.Picasso;
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater inflater;
+//    private String[] moviePosterImages;
 
     public ImageAdapter(Context c){
         mContext = c;
+
+        inflater = LayoutInflater.from(c);
+    }
+
+    public ImageAdapter(Context c, String[] postersArray){
+        mContext = c;
+        moviePosterImages = postersArray;
 
         inflater = LayoutInflater.from(c);
     }
