@@ -6,35 +6,28 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager()
-//                    .beginTransaction().add(R.id.fragment, new MovieFragment())
-//                    .commit();
-//        }
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
-
-    // TODO: Promeniti App Name tako da se dinamicki menja u zavisnosti od odabira filmova
-    // main ekran trenutno ima naslov Rubric, koji je definisan u strings.xml fajlu, key je app_name
-    // Proveriti da li je moguce menjati app_name u zavisnosti od odabira kriterijuma (Pop Movies stoji u mockup-u) a trebalo bi da stoji
-    // Top Rated Movies ako je odabrana lista sa Top Rated filmovima
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.detail, menu);
         return true;
     }
 
@@ -53,4 +46,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

@@ -41,7 +41,8 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+//        return null;
+        return moviePosterImages[position];
     }
 
     @Override
@@ -56,12 +57,20 @@ public class ImageAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.poster_image_item, viewGroup, false);
         }
 
-        Picasso
-            .with(mContext)
-            .load(moviePosterImages[i])
-            .placeholder(R.drawable.ic_download)
-            .fit()
-            .into((ImageView) view);
+        Picasso picasso = Picasso.with(mContext);
+        // Image Source:
+        // green (memory, best performance)
+        // blue (disk, good performance)
+        // red (network, worst performance).
+        picasso.setIndicatorsEnabled(true);
+        picasso.load(moviePosterImages[i]).placeholder(R.drawable.ic_download).fit().into((ImageView) view);
+
+//        Picasso
+//                .with(mContext)
+//                .load(moviePosterImages[i])
+//                .placeholder(R.drawable.ic_download)
+//                .fit()
+//                .into((ImageView) view);
 
         return view;
     }

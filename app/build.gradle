@@ -18,7 +18,7 @@ android {
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'OPEN_MOVIE_DB_API_KEY', "\"YOUR API KEY HERE\""
+        it.buildConfigField 'String', 'OPEN_MOVIE_DB_API_KEY', "\"672b376593e6259ea0b1a011273b7c67\""
     }
 }
 

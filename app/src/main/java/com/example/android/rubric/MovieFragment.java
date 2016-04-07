@@ -1,7 +1,10 @@
 package com.example.android.rubric;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,10 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,8 +55,7 @@ public class MovieFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchMoviesTask moviesTask = new FetchMoviesTask();
-            moviesTask.execute("popular");
+            updateMoviesList();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -66,8 +65,7 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        FetchMoviesTask moviesTask = new FetchMoviesTask();
-        moviesTask.execute("popular");
+        updateMoviesList();
 
         // Load fragment layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -77,18 +75,32 @@ public class MovieFragment extends Fragment {
         mImageAdapter = new ImageAdapter(getActivity());
         gridView.setAdapter(mImageAdapter);
 
-//        gridView.setAdapter(new ImageAdapter(getActivity()));
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-////
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Toast.makeText(getActivity(), String.valueOf(position),
-//                        Toast.LENGTH_LONG).show();
-//            }
-//        });
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String message = mImageAdapter.getItem(position).toString();
+                Intent intent = new Intent(getActivity(), DetailsActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, message);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateMoviesList();
+    }
+
+    private void updateMoviesList() {
+        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String movie_criteria = prefs.getString(getString(R.string.pref_criteria_key),
+                getString(R.string.pref_criteria_default));
+        moviesTask.execute(movie_criteria);
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, String[]> {
