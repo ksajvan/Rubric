@@ -23,4 +23,7 @@
     <string name="pref_criteria_title">Movie Criteria</string>
     <string name="pref_criteria_default">popular</string>
 
+    <!-- SHARE INTENT -->
+    <string name="action_share">Share</string>
+
 </resources>
